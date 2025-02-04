@@ -1,0 +1,3 @@
+- src: git+https://git-1.int.ops.cldx.ru/platformservices/molecule/ansible_role_create_destroy
+  version: "v1.0.2"
+  name: cloudx.molecule_create_destroy

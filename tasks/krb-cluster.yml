@@ -1,25 +1,12 @@
 ---
-- name: MAIN | Create dump file with all principals
-  ansible.builtin.shell:
-    cmd: kdb5_util dump {{ krb_kdc_db_dump_path }}
-    executable: /bin/bash
-  notify:
-    - RESTART SLAVE SERVER
-    - CLUSTER FLAG
-  when:
-    krb_cluster_result.msg is defined or
-    krb_cluster_result.content | b64decode |
-      int != ansible_play_hosts_all | length
+- name: KRB-CLUSTER | Create dump file with all principals
+  ansible.builtin.command: kdb5_util dump {{ krb_kdc_db_dump_path }}
+  changed_when: false
 
-- name: MAIN | Connect to slave servers
-  ansible.builtin.shell:
-    cmd: kprop -f {{ krb_kdc_db_dump_path }} {{ hostvars[item]['ansible_fqdn'] }}
-    executable: /bin/bash
+- name: KRB-CLUSTER | Connect to slave servers # noqa no-changed-when
+  ansible.builtin.command: >-
+    kprop -f {{ krb_kdc_db_dump_path }}
+    {{ hostvars[item]['ansible_fqdn'] }}
   with_inventory_hostnames: krb_replica
-  when:
-    krb_cluster_result.msg is defined or
-    krb_cluster_result.content | b64decode |
-      int != ansible_play_hosts_all | length
-  notify:
-    - RESTART SLAVE SERVER
-    - CLUSTER FLAG
+  register: __clustered
+  when: false in check_clustered.values()

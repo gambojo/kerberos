@@ -1,5 +1,5 @@
 ---
-- name: KERBEROS | Install packages
+- name: KERBEROS | Check
   ansible.builtin.include_tasks: krb-check.yml
 
 - name: KERBEROS | Set kerberos master server
@@ -26,10 +26,7 @@
   when: krb_secure_random
 
 - name: KERBEROS | Install packages
-  ansible.builtin.include_tasks: krb-packages.yml
-
-- name: KERBEROS | Setting logging
-  ansible.builtin.include_tasks: krb-log.yml
+  ansible.builtin.include_tasks: krb-install.yml
 
 - name: KERBEROS | Setup kerberos master server
   ansible.builtin.include_tasks: krb-master.yml
@@ -39,8 +36,18 @@
   ansible.builtin.include_tasks: krb-slave.yml
   when: inventory_hostname in krb_replica_group
 
+- name: KERBEROS | Setup kerberos logging
+  ansible.builtin.include_tasks: krb-log.yml
+
 - name: KERBEROS | Setup kerberos cluster
   ansible.builtin.include_tasks: krb-cluster.yml
   when:
     - krb_replica_group | length > 0
     - inventory_hostname in krb_master_group
+
+- name: KERBEROS | Cluster flag # noqa no-handler
+  ansible.builtin.file:
+    path: "{{ krb_conf_dir }}__clustered"
+    mode: '0644'
+    state: touch
+  when: hostvars[groups.krb_master[0]]['__clustered'] is changed

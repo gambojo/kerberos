@@ -1,0 +1,10 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: "{{ molecule_no_log }}"
+  vars:
+    molecule_playbook: create
+  roles:
+    - role: cloudx.molecule_create_destroy # noqa syntax-check[specific]

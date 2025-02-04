@@ -41,7 +41,7 @@ krb_replica_packages: ["krb5-kpropd"]
 krb_client_packages:
   - "krb5-config"
   - "krb5-user"
-  - "libpam-krb5"
+  - "libkrb5-3"
   - "python3-selinux"
 krb_kdc_service: "krb5-kdc"
 krb_kadmind_service: "krb5-admin-server"

@@ -1,0 +1,6 @@
+---
+krb_realm_name: "EXAMPLE.COM"
+krb_kdc_port: ["88", "750"]
+krb_master_db_pass: "password123"
+krb_kadmin_user: "krbadmin"
+krb_kadmin_pass: "krbadmin123"
