@@ -1,0 +1,17 @@
+[kdcdefaults]
+	kdc_ports = {{ krb_kdc_port | join(',') }}
+	kdc_tcp_ports = {{ krb_kdc_port | join(',') }}
+
+[realms]
+	{{ krb_realm_name | upper() }} = {
+		database_name = {{ krb_kdc_db }}
+		admin_keytab = {{ krb_admin_keytab }}
+		acl_file = {{ krb_kadm5_acl_path }}
+		dict_file = {{ krb_dict_file }}
+		kdc_ports = {{ krb_kdc_port | join(',') }}
+		max_life = {{ krb_ticket_max_life }}
+		max_renewable_life = {{ krb_max_renewable_life }}
+		supported_enctypes = {{ krb_encriptes | join(' ') }}
+		iprop_enable = {{ true if krb_incremental_replication_db else false }}
+		iprop_replica_poll = {{ krb_replica_pull_updates_time }}
+	}

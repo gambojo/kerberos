@@ -1,0 +1,17 @@
+---
+krb_conf_path: "/etc/krb5.conf"
+krb_conf_dir: "/etc/krb5kdc"
+krb_work_dir: "/var/lib/krb5kdc"
+krb_dict_file: "/usr/share/dict/words"
+krb_admin_keytab: "{{ krb_work_dir }}/kadm5.keytab"
+krb_kpropd_acl_path: "{{ krb_conf_dir }}/kpropd.acl"
+krb_kdc_conf_path: "{{ krb_conf_dir }}/kdc.conf"
+krb_kadm5_acl_path: "{{ krb_conf_dir }}/kadm5.acl"
+krb_kdc_db: "{{ krb_work_dir }}/principal"
+krb_kdc_db_dump_path: "{{ krb_work_dir }}/replica_datatrans"
+
+krb_master_group: "{{ groups.krb_master | default('') }}"
+krb_replica_group: "{{ groups.krb_replica | default('') }}"
+krb_user_princ_flag: "{{ krb_conf_dir }}/.user_princ.flag"
+krb_host_princ_flag: "{{ krb_conf_dir }}/.host_princ.flag"
+krb_cluster_flag: "{{ krb_conf_dir }}/.cluster.flag"

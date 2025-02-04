@@ -1,0 +1,13 @@
+---
+- name: KRB-PACKAGES | Install master packages
+  ansible.builtin.apt:
+    name: "{{ krb_master_packages +
+              krb_client_packages }}"
+  when: inventory_hostname in krb_master_group
+
+- name: KRB-PACKAGES | Install replica packages
+  ansible.builtin.apt:
+    name: "{{ krb_master_packages +
+              krb_client_packages +
+              krb_replica_packages }}"
+  when: inventory_hostname in krb_replica_group

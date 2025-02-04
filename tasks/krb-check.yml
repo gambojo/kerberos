@@ -1,0 +1,26 @@
+---
+- name: KRB-CHECK | Check the master group is exist
+  delegate_to: localhost
+  ansible.builtin.fail:
+    msg: "Cannot use kerberos roles if there is 'krb_master'
+          group are not exist or empty!"
+  when: krb_master_group | length == 0
+
+- name: KRB-CHECK | Checking user principal already exist
+  ansible.builtin.slurp:
+    src: "{{ krb_user_princ_flag }}"
+  register: krb_user_princ_result
+  failed_when: false
+
+- name: KRB-CHECK | Checking host principal already exist
+  ansible.builtin.slurp:
+    src: "{{ krb_host_princ_flag }}"
+  register: krb_host_princ_result
+  failed_when: false
+
+- name: KRB-CHECK | Checking how servers already clustered
+  ansible.builtin.slurp:
+    src: "{{ krb_cluster_flag }}"
+  register: krb_cluster_result
+  when: krb_replica_group | length > 0
+  failed_when: false

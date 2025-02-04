@@ -1,0 +1,36 @@
+---
+- name: RESTART MASTER SERVER
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  when: inventory_hostname in krb_master_group
+  loop:
+    - "{{ krb_kdc_service }}"
+    - "{{ krb_kadmind_service }}"
+
+- name: RESTART SLAVE SERVER
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: restarted
+  when: inventory_hostname in krb_replica_group
+  loop:
+    - "{{ krb_kdc_service }}"
+    - "{{ krb_kpropd_service }}"
+
+- name: USER PRINCIPAL FLAG
+  ansible.builtin.copy:
+    dest: "{{ krb_user_princ_flag }}"
+    content: "{{ krb_kadmin_user }}"
+    mode: "0644"
+
+- name: HOST PRINCIPAL FLAG
+  ansible.builtin.copy:
+    dest: "{{ krb_host_princ_flag }}"
+    content: "{{ ansible_play_hosts_all | join(',') }}"
+    mode: "0644"
+
+- name: CLUSTER FLAG
+  ansible.builtin.copy:
+    dest: "{{ krb_cluster_flag }}"
+    content: "{{ ansible_play_hosts_all | length }}"
+    mode: "0644"

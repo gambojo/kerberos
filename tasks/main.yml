@@ -1,0 +1,46 @@
+---
+- name: KERBEROS | Install packages
+  ansible.builtin.include_tasks: krb-check.yml
+
+- name: KERBEROS | Set kerberos master server
+  ansible.builtin.set_fact:
+    krb_master_hostname: "{{ hostvars[groups.krb_master[0]]['ansible_fqdn'] }}"
+
+- name: KERBEROS | Resolve hostname
+  ansible.builtin.lineinfile:
+    line: "{{ hostvars[item]['ansible_default_ipv4']['address'] }}
+            {{ hostvars[item]['ansible_fqdn'] }}
+              {{ hostvars[item]['ansible_hostname'] }}"
+    dest: "/etc/hosts"
+    unsafe_writes: true
+  with_inventory_hostnames:
+    - krb_master
+    - krb_replica
+
+- name: KERBEROS | Set secure randomizer
+  ansible.builtin.file:
+    path: "/dev/random"
+    src: "/dev/urandom"
+    state: link
+    force: true
+  when: krb_secure_random
+
+- name: KERBEROS | Install packages
+  ansible.builtin.include_tasks: krb-packages.yml
+
+- name: KERBEROS | Setting logging
+  ansible.builtin.include_tasks: krb-log.yml
+
+- name: KERBEROS | Setup kerberos master server
+  ansible.builtin.include_tasks: krb-master.yml
+  when: inventory_hostname in krb_master_group
+
+- name: KERBEROS | Setup kerberos slave server
+  ansible.builtin.include_tasks: krb-slave.yml
+  when: inventory_hostname in krb_replica_group
+
+- name: KERBEROS | Setup kerberos cluster
+  ansible.builtin.include_tasks: krb-cluster.yml
+  when:
+    - krb_replica_group | length > 0
+    - inventory_hostname in krb_master_group

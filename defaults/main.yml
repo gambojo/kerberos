@@ -1,0 +1,49 @@
+---
+# Main options
+krb_realm_name: "EXAMPLE.COM"
+krb_kdc_port: ["88", "750"]
+krb_master_db_pass: "password123"
+krb_kadmin_user: "krbadmin"
+krb_kadmin_pass: "krbadmin123"
+# KRB server options
+krb_ticket_max_life: "10h 0m 0s"
+krb_max_renewable_life: "7d 0h 0m 0s"
+krb_incremental_replication_db: false
+krb_replica_pull_updates_time: "2m"
+# KRB client options
+krb_dns_lookup_realm: false
+krb_dns_lookup_kdc: false
+krb_kdc_timesync: true
+krb_ccache_type: "4"
+krb_forwardable: true
+krb_proxiable: true
+krb_rdns: false
+krb_ticket_lifetime: "24h"
+krb_renew_lifetime: "7d"
+krb_log_dir: "{{ krb_work_dir }}/log"
+krb_default_log: "{{ krb_log_dir }}/krb5libs.log"
+krb_kdc_log: "{{ krb_log_dir }}/krb5kdc.log"
+krb_admin_log: "{{ krb_log_dir }}/krb5admin.log"
+krb_encriptes:
+  - "aes256-cts:normal"
+  - "aes128-cts:normal"
+  - "des3-hmac-sha1:normal"
+  - "arcfour-hmac:normal"
+  - "des-hmac-sha1:normal"
+  - "des-cbc-md5:normal"
+  - "des-cbc-crc:normal"
+# Other options
+krb_master_packages:
+  - "krb5-admin-server"
+  - "krb5-kdc"
+  - "krb5-kdc-ldap"
+krb_replica_packages: ["krb5-kpropd"]
+krb_client_packages:
+  - "krb5-config"
+  - "krb5-user"
+  - "libpam-krb5"
+  - "python3-selinux"
+krb_kdc_service: "krb5-kdc"
+krb_kadmind_service: "krb5-admin-server"
+krb_kpropd_service: "krb5-kpropd"
+krb_secure_random: false

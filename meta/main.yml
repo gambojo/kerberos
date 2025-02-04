@@ -1,0 +1,18 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: kerberos
+  namespace: services
+  author: "Agamov Gamid"
+  description: Kerberos cluster for Debian
+  license: "None"
+  min_ansible_version: '2.10'
+  platforms:
+    - name: Debian
+      versions:
+        - "bullseye"
+        - "bookworm"
+  galaxy_tags:
+    - kerberos
+    - krb5

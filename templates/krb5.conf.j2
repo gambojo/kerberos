@@ -1,0 +1,34 @@
+[libdefaults]
+	default_realm = {{ krb_realm_name | upper() }}
+	kdc_timesync = {{ "1" if krb_kdc_timesync else "0" }}
+	ccache_type = {{ krb_ccache_type }}
+	forwardable = {{ true if krb_forwardable else false }}
+	proxiable = {{ true if krb_proxiable else false }}
+	rdns = {{ true if krb_rdns else false }}
+	dns_lookup_realm = {{ true if krb_dns_lookup_realm else false }}
+	dns_lookup_kdc = {{ true if krb_dns_lookup_kdc else false }}
+	ticket_lifetime = {{ krb_ticket_lifetime }}
+	renew_lifetime = {{ krb_renew_lifetime }}
+
+[realms]
+	{{ krb_realm_name | upper() }} = {
+		kdc = {{ krb_master_hostname }}
+{%   if krb_replica_group | length > 0 %}
+{%     for krb_replica in groups.krb_replica %}
+		kdc = {{ hostvars[krb_replica]['ansible_fqdn'] }}
+{%     endfor %}
+{%   endif %}
+		admin_server = {{ krb_master_hostname }}
+		default_domain = {{ krb_realm_name | lower() }}
+	}
+
+[domain_realm]
+	.{{ krb_realm_name | lower() }} = {{ krb_realm_name | upper() }}
+	{{ krb_realm_name | lower() }} = {{ krb_realm_name | upper() }}
+
+{% if inventory_hostname in krb_master_group or inventory_hostname in krb_replica_group %}
+[logging]
+	default = FILE:{{ krb_default_log }}
+	kdc = FILE:{{ krb_kdc_log }}
+	admin_server = FILE:{{ krb_admin_log }}
+{% endif %}

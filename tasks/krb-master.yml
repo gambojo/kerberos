@@ -1,0 +1,69 @@
+---
+- name: KRB-MASTER | KDC configuration
+  ansible.builtin.template:
+    src: "{{ krb_kdc_conf_path | basename }}.j2"
+    dest: "{{ krb_kdc_conf_path }}"
+    mode: "0644"
+  notify: RESTART MASTER SERVER
+
+- name: KRB-MASTER | KDC ACL configuration
+  ansible.builtin.template:
+    src: "{{ krb_kadm5_acl_path | basename }}.j2"
+    dest: "{{ krb_kadm5_acl_path }}"
+    mode: "0644"
+  notify: RESTART MASTER SERVER
+
+- name: KRB-MASTER | Client configuration
+  ansible.builtin.template:
+    src: "{{ krb_conf_path | basename }}.j2"
+    dest: "{{ krb_conf_path }}"
+    mode: "0644"
+
+- name: KRB-MASTER | Create initial Kerberos database
+  ansible.builtin.command: kdb5_util -P {{ master_db_pass }} create -s
+  args:
+    creates: "{{ krb_kdc_db }}"
+  no_log: true
+
+- name: KRB-MASTER | Start kerberos distribution center
+  ansible.builtin.service:
+    name: "{{ krb_kdc_service }}"
+    state: started
+    enabled: true
+
+- name: KRB-MASTER | Start kerberos admin server
+  ansible.builtin.service:
+    name: "{{ krb_kadmind_service }}"
+    state: started
+    enabled: true
+
+- name: KRB-MASTER | Create principal for admin users
+  ansible.builtin.command: >-
+    kadmin.local -q "addprinc -pw {{ krb_kadmin_pass }}
+    {{ krb_kadmin_user }}/admin"
+  no_log: true
+  notify: USER PRINCIPAL FLAG
+  when:
+    krb_user_princ_result.msg is defined or
+    krb_user_princ_result.content | b64decode != krb_kadmin_user
+
+- name: KRB-MASTER | Create principal for master host
+  ansible.builtin.command: >-
+    kadmin.local -q "add_principal -pw {{ krb_kadmin_pass }}
+    -randkey host/{{ ansible_fqdn }}"
+  no_log: true
+  notify: HOST PRINCIPAL FLAG
+  when:
+    krb_host_princ_result.msg is defined or
+    krb_host_princ_result.content |
+      b64decode != ansible_play_hosts_all | join(',')
+
+- name: KRB-MASTER | Add master host principal to keytab
+  ansible.builtin.command: >-
+    kadmin.local -q "ktadd -pw {{ krb_kadmin_pass }}
+    host/{{ ansible_fqdn }}@{{ krb_realm_name | upper() }}"
+  no_log: true
+  when:
+    krb_host_princ_result.msg is defined or
+    krb_host_princ_result.content |
+      b64decode != ansible_play_hosts_all | join(',')

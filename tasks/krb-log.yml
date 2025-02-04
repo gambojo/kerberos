@@ -1,0 +1,33 @@
+---
+- name: KRB-LOG | Create log dir
+  ansible.builtin.file:
+    path: "{{ krb_log_dir }}"
+    state: directory
+    mode: "0700"
+  notify:
+    - RESTART MASTER SERVER
+    - RESTART SLAVE SERVER
+
+- name: KRB-LOG | Create log files
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: touch
+    mode: "0640"
+  changed_when: false
+  loop:
+    - "{{ krb_default_log }}"
+    - "{{ krb_kdc_log }}"
+    - "{{ krb_admin_log }}"
+
+- name: KRB-LOG | Create link to log files in default log dir
+  ansible.builtin.file:
+    src: "{{ item }}"
+    dest: "/var/log/{{ item | basename }}"
+    state: link
+  notify:
+    - RESTART MASTER SERVER
+    - RESTART SLAVE SERVER
+  loop:
+    - "{{ krb_default_log }}"
+    - "{{ krb_kdc_log }}"
+    - "{{ krb_admin_log }}"
