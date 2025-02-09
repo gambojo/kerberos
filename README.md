@@ -5,9 +5,9 @@
 |---|---|---|---|
 | krb_realm_name | The area that the server will serve. | string | "EXAMPLE.COM" |
 | krb_kdc_port | Listning ports. | list | [88, 750] |
-| krb_master_db_pass | DB password. | string | "password" |
+| krb_master_db_pass | DB password. | string | "password123" |
 | krb_kadmin_user | Username of DB control. | string | "krbadmin" |
-| krb_kadmin_pass | Userpassword of DB control. | string | "krbadmin" |
+| krb_kadmin_pass | Userpassword of DB control. | string | "krbadmin123" |
 | krb_master_packages | List of packages for installation on the master server. | list | [krb5-admin-server,<br />krb5-kdc,<br />krb5-kdc-ldap] |
 | krb_replica_packages | Installing listt of packages for replica server. | list | ["krb5-kpropd"] |
 | krb_client_packages | Installing listt of packages for clients. | list | ["krb5-config",<br />"krb5-user",<br />"libpam-krb5",<br />"python3-selinux"] |
