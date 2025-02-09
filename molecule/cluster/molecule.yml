@@ -1,0 +1,16 @@
+---
+driver:
+  name: docker
+platforms:
+  - name: kerberos-cluster-master
+    image: alvistack/debian-testing
+    pre_build_image: true
+    groups:
+      - krb_master
+  - name: kerberos-cluster-replica
+    image: alvistack/debian-testing
+    pre_build_image: true
+    groups:
+      - krb_replica
+verifier:
+  name: testinfra
