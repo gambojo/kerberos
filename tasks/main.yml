@@ -47,7 +47,9 @@
 
 - name: KERBEROS | Cluster flag # noqa no-handler
   ansible.builtin.file:
-    path: "{{ krb_conf_dir }}__clustered"
+    path: "{{ krb_conf_dir }}/__clustered"
     mode: '0644'
     state: touch
-  when: hostvars[groups.krb_master[0]]['__clustered'] is changed
+  when:
+    - krb_replica_group | length > 0
+    - hostvars[groups.krb_master[0]]['__clustered'] is changed

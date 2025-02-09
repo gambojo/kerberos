@@ -8,7 +8,7 @@
 
 - name: KRB-CHEK | Check is server allready clustered
   ansible.builtin.stat:
-    path: "{{ krb_conf_dir }}__clustered"
+    path: "{{ krb_conf_dir }}/__clustered"
   register: __check_clustered
 
 - name: KRB-CHEK | Check clustered status
